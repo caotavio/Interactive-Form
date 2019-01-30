@@ -1,6 +1,7 @@
 // Page loads with the name field ready for input.
 $('#name').focus();
 
+
  /* ”Job Role” section
  If the user chooses the option 'Other' in the dropdown menu an input box
  appears for the description of the role.
@@ -65,6 +66,7 @@ scheduleCrash(express, frameworks);
 scheduleCrash(libraries, node);
 scheduleCrash(node, libraries);
 
+
 /*
 This sums the total price of the selected activities and displays at the end of
 the section.
@@ -96,12 +98,11 @@ $("input:checkbox").on('click', function() {
 Displays only the information regarding the selected option and has credit
 card as the default payment method.
 */
-
 $('#paypal, #bitcoin').hide();
 $('#payment option[value="credit card"]').prop('selected', true);
 $('#payment option[value="select_method"]').prop('disabled', true);
 
-$('#payment').on('change', function() {
+$('#payment').on('change', () => {
   if ($('#payment option:selected').val() === 'credit card') {
     $('#credit-card').slideDown();
     $('#paypal, #bitcoin').hide();
@@ -116,12 +117,11 @@ $('#payment').on('change', function() {
 
 
 /*•	Form validation
-
+Grouped functions for each item that needs validation
 */
-
 function validName() {
-  let validName = $('#name').val();
-  if (validName !== '') {
+  let name = $('#name').val();
+  if (name !== '') {
     $('.error').remove();
     return true;
   } else if ($('.error').length) {
@@ -133,13 +133,13 @@ function validName() {
 }
 
 function validEmail() {
-  let validEmail = /^[^@]+@[^@.]+\.[a-z]+$/i.test($('#mail').val());
-  if (validEmail) {
+  let email = /^[^@]+@[^@.]+\.[a-z]+$/i.test($('#mail').val());
+  if (email) {
     $('.error').remove();
     return true;
     } else if ($('.error').length) {
         return false;
-      } else if (!validEmail) {
+      } else if (!email) {
           $('#mail').after("<p class='error'>Please provide a valid email address</p>");
           return false;
         }
@@ -159,99 +159,82 @@ function validCheckbox() {
 }
 
 function validCreditCard() {
-  let validCreditCard = /^[0-9]{13,16}$/.test($('#cc-num').val());
-  let validZipCode = /^[0-9]{5}$/.test($('#zip').val());
-  let validCVV = /^[0-9]{3}$/.test($('#cvv').val());
+  let creditCard = /^[0-9]{13,16}$/.test($('#cc-num').val());
   if ($('#payment option:selected').val() === 'credit card') {
-    if (validCreditCard && validZipCode && validCVV) {
+    if (creditCard) {
       $('.error').remove();
       return true;
     } else if ($('.error').length) {
         return false;
-      } else if (!validCreditCard || !validZipCode || !validCVV) {
-          $('#payment').after("<p class='error'>Invalid credit card information</p>");
+      } else if (!creditCard) {
+          $('#payment').after("<p class='error'>Invalid credit card number</p>");
           return false;
         }
-  }
+  } else {
+      return true;
+    }
 }
 
-function validateAll() {
-  validName();
-  validEmail();
-  validCheckbox();
-  validCreditCard();
+function validZipCode() {
+  let zipCode = /^[0-9]{5}$/.test($('#zip').val());
+  if ($('#payment option:selected').val() === 'credit card') {
+    if (zipCode) {
+      $('.error').remove();
+      return true;
+    } else if ($('.error').length) {
+        return false;
+      } else if (!zipCode) {
+          $('#payment').after("<p class='error'>Invalid zip code</p>");
+          return false;
+        }
+  } else {
+      return true;
+    }
 }
 
-$('button').on('click', function() {
-  return validateAll();
-});
-
-// let validation = {
-//   validName: function() {
-//     let validName = $('#name').val();
-//     if (validName !== '') {
-//       $('.error').remove();
-//       return true;
-//     } else if ($('.error').length) {
-//         return false;
-//       } else {
-//           $('#name').after("<span class='error'>Please type in your name</span>");
-//           return false;
-//         }
-//   },
-//   validEmail: function() {
-//     let validEmail = /^[^@]+@[^@.]+\.[a-z]+$/i.test($('#mail').val());
-//     if (validEmail) {
-//       $('.error').remove();
-//       return true;
-//       } else if ($('.error').length) {
-//           return false;
-//         } else if (!validEmail) {
-//             $('#mail').after("<p class='error'>Please provide a valid email address</p>");
-//             return false;
-//           }
-//   },
-//   validCheckbox: function() {
-//     let checkboxChecked = $('.activities input:checked').length > 0;
-//     if (checkboxChecked) {
-//       $('.error').remove();
-//       return true;
-//       } else if ($('.error').length) {
-//           return false;
-//         } else if (!checkboxChecked) {
-//             $('.activities').after("<p class='error'>At least one activity must be checked</p>");
-//             return false;
-//           }
-//   },
-//   validCreditCard: function() {
-//     let validCreditCard = /^[0-9]{13,16}$/.test($('#cc-num').val());
-//     let validZipCode = /^[0-9]{5}$/.test($('#zip').val());
-//     let validCVV = /^[0-9]{3}$/.test($('#cvv').val());
-//     if ($('#payment option:selected').val() === 'credit card') {
-//       if (validCreditCard && validZipCode && validCVV) {
-//         $('.error').remove();
-//         return true;
-//       } else if ($('.error').length) {
-//           return false;
-//         } else if (!validCreditCard || !validZipCode || !validCVV) {
-//             $('#payment').after("<p class='error'>Invalid credit card information</p>");
-//             return false;
-//           }
-//     }
-//   }
-// };
-
-/*
+function validCVV() {
+  let cvv = /^[0-9]{3}$/.test($('#cvv').val());
+  if ($('#payment option:selected').val() === 'credit card') {
+    if (cvv) {
+      $('.error').remove();
+      return true;
+    } else if ($('.error').length) {
+        return false;
+      } else if (!cvv) {
+          $('#payment').after("<p class='error'>Invalid CVV</p>");
+          return false;
+        }
+  } else {
+      return true;
+    }
+}
 
 
-/*
-•	Form works without JavaScript - Progressive Enhancement
-o	The user should still have access to all form fields and payment information
-if JS isn't working for whatever reason. For example, when the JS is removed
- from the project:
-o	The “Other” text field under the "Job Role" section should be visible
-o	All information for Bitcoin, PayPal or Credit Card payments should be visible.
+/*•	Form validation
+If items are not valid give error messages before user tries to submit, then
+check if all items are valid before allowing to sumbit.
 */
+$('#name').focusout(() => {validName();});
 
+$('#mail').focusout(() => {validEmail();});
 
-// •	Add good code comments
+$('.activities').change(() => {validCheckbox();});
+
+$('#cc-num').focusout(() => {validCreditCard();});
+
+$('#zip').focusout(() => {validZipCode();});
+
+$('#cvv').focusout(() => {validCVV();});
+
+$('button').on('click', () => {
+  if(validName() &&
+     validEmail() &&
+     validCheckbox() &&
+     validCreditCard() &&
+     validZipCode() &&
+     validCVV()) {
+    return true;
+  } else {
+    return false;
+  }
+});
